@@ -22,7 +22,7 @@ import static java.security.KeyRep.Type.SECRET;
 @Slf4j
 public class JWTUtils {
 
-    public static final String SECRET ="5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";;
+    public static final String SECRET ="4A6F784C6E784F366A703477537A7A343D414E7261516336506B6F734E57504E";
 
     private JWTUtils() {
     }

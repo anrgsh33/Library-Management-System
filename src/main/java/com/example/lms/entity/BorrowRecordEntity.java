@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -25,7 +26,7 @@ public class BorrowRecordEntity {
     @JoinColumn(name="book_id",nullable = false)
     private BookEntity bookEntity;
 
-    private Date borrowDate;
+    private LocalDate borrowDate;
 
-    private Date returnDate;
+    private LocalDate returnDate;
 }
