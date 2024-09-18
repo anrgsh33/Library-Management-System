@@ -7,15 +7,18 @@ import com.example.lms.entity.BookEntity;
 import com.example.lms.response.ResponseModel;
 import com.example.lms.service.BookService;
 import com.example.lms.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Validated
 @RequestMapping("/api/v1")
 public class BookController {
     @Autowired
@@ -47,7 +50,7 @@ public class BookController {
 
     @PostMapping(path = "/books")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<ResponseModel> addBook(@RequestBody BookDto book) {
+    public ResponseEntity<ResponseModel> addBook(@RequestBody @Valid BookDto book) {
         ResponseModel response= bookService.addBook(book);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -55,7 +58,7 @@ public class BookController {
 
     @PutMapping(path = "/books/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<ResponseModel> updateBook(@PathVariable("id") int id, @RequestBody BookDto book) {
+    public ResponseEntity<ResponseModel> updateBook(@PathVariable("id") int id, @RequestBody @Valid BookDto book) {
         ResponseModel response = bookService.updateBook(id, book);
         return new ResponseEntity<>(response, HttpStatus.OK);
 

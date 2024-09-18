@@ -5,6 +5,7 @@ import com.example.lms.dto.UserDto;
 import com.example.lms.entity.UserEntity;
 import com.example.lms.response.ResponseModel;
 import com.example.lms.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +22,13 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(path = "/register")
-    ResponseEntity<ResponseModel> registerUser(@RequestBody UserDto user){
+    ResponseEntity<ResponseModel> registerUser(@RequestBody @Valid UserDto user){
         ResponseModel response=userService.addUser(user);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping(path="/login")
-    ResponseEntity<ResponseModel<String>>loginUser(@RequestBody LoginReqDto dto){
+    ResponseEntity<ResponseModel<String>>loginUser(@RequestBody @Valid LoginReqDto dto){
         ResponseModel<String> response=userService.loginUser(dto);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }

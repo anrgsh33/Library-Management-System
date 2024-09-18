@@ -15,11 +15,15 @@ public class BookEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(nullable = false,unique = true)
     private String title;
 
+    @Column(nullable = false)
     private String author;
 
+    @Column(nullable = false,unique = true)
     private String isbn;
 
+    @Column(nullable = false)
     private int availableCopies;
 }
