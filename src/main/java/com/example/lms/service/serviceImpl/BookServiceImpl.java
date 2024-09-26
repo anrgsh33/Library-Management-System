@@ -8,7 +8,9 @@ import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.repository.BookRepository;
 import com.example.lms.response.ResponseModel;
 import com.example.lms.service.BookService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class BookServiceImpl implements BookService {
     @Autowired
     private BookRepository bookRepository;
@@ -33,7 +36,7 @@ public class BookServiceImpl implements BookService {
                             book.getIsbn(),
                             book.getAvailableCopies()
                     ))
-                    .collect(Collectors.toList());
+                    .toList();
             return new ResponseModel<>("Books retrieved successfully!", HttpStatus.OK, bookResDtoList);
         } catch (Exception e) {
             throw new CustomServiceException("Error while getting books");
@@ -59,7 +62,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public ResponseModel addBook(BookDto book) {
-        try {
+       // try {
             BookEntity bookEntity=new BookEntity();
             bookEntity.setAuthor(book.getAuthor());
             bookEntity.setTitle(book.getTitle());
@@ -70,9 +73,13 @@ public class BookServiceImpl implements BookService {
 
             return new ResponseModel("Book added successfully",HttpStatus.OK,null);
 
-        }catch(Exception e){
-            throw new CustomServiceException(e.getMessage());
-        }
+//        }catch(DataIntegrityViolationException e){
+//            throw new DataIntegrityViolationException(e.getMessage());
+//        }
+//        catch(Exception e){
+//            log.info(e.toString());
+//            throw new CustomServiceException(e.getMessage());
+//        }
     }
 
     @Override
@@ -104,7 +111,4 @@ public class BookServiceImpl implements BookService {
             throw new ResourceNotFoundException("Book not found with id:"+id);
         }
     }
-
-
-
 }
