@@ -1,5 +1,7 @@
 package com.example.lms.util;
 
+import com.example.lms.entity.UserEntity;
+import com.example.lms.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -7,12 +9,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 
@@ -22,6 +27,9 @@ import static java.security.KeyRep.Type.SECRET;
 @Slf4j
 public class JWTUtils {
 
+    @Autowired
+    private UserRepository userRepository;
+
     public static final String SECRET ="4A6F784C6E784F366A703477537A7A343D414E7261516336506B6F734E57504E";
 
     private JWTUtils() {
@@ -29,6 +37,37 @@ public class JWTUtils {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public void updateUserActivity(UserDetails userDetails){
+        Optional<UserEntity>userOptional=userRepository.findByEmail(userDetails.getUsername());
+        if(userOptional.isPresent()){
+            UserEntity user=userOptional.get();
+            user.setLastActivity(java.time.LocalDateTime.now());
+            userRepository.save(user);
+        }
+    }
+
+    public boolean checkTokenExpiration(UserDetails userDetails){
+        Optional<UserEntity>userOptional=userRepository.findByEmail(userDetails.getUsername());
+        if(userOptional.isPresent()){
+            UserEntity user=userOptional.get();
+            LocalDateTime time1=LocalDateTime.now();
+            LocalDateTime time2=user.getLastActivity();
+
+            int diffMinutes=time1.getMinute()-time2.getMinute();
+
+            log.info("Minutes Diff :"+diffMinutes);
+
+            if(diffMinutes>1){
+                return true;
+            }
+
+
+        }
+
+        return false;
+
     }
 
     public Date extractExpiration(String token) {

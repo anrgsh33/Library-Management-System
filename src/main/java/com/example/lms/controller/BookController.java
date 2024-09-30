@@ -45,7 +45,6 @@ public class BookController {
     public ResponseEntity<ResponseModel<BookResDto>> getBookById(@PathVariable int id) {
         ResponseModel<BookResDto> response = bookService.getBookById(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
-
     }
 
     @PostMapping(path = "/books")
@@ -61,7 +60,6 @@ public class BookController {
     public ResponseEntity<ResponseModel> updateBook(@PathVariable("id") int id, @RequestBody @Valid BookDto book) {
         ResponseModel response = bookService.updateBook(id, book);
         return new ResponseEntity<>(response, HttpStatus.OK);
-
     }
 
     @DeleteMapping(path = "/books/{id}")
@@ -69,7 +67,6 @@ public class BookController {
     public ResponseEntity<ResponseModel> deleteBook(@PathVariable("id") int id) {
         ResponseModel response = bookService.deleteBook(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
-
     }
 
 }

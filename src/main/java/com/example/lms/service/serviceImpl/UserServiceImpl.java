@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
             userEntity.setName(user.getName());
             userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
             userEntity.setRole(user.getRole());
+            userEntity.setLastActivity(LocalDateTime.now());
 
             userRepository.save(userEntity);
 
@@ -66,6 +68,10 @@ public class UserServiceImpl implements UserService {
             if (userOptional.isPresent()) {
                 log.info(userOptional.get().getName());
                 String jwt = jwtUtils.generateToken(user.getEmail());
+               //Upating user last activity on login also
+                UserEntity userEntity=userOptional.get();
+                userEntity.setLastActivity(LocalDateTime.now());
+                userRepository.save(userEntity);
 
                 return new ResponseModel("User successfully logged in", HttpStatus.OK,jwt.toString());
 

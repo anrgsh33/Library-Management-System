@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,6 +33,8 @@ public class UserEntity implements UserDetails {
 
     @Column(nullable = false)
     private String role;
+
+    private LocalDateTime lastActivity;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
