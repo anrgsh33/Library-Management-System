@@ -30,7 +30,7 @@ public class JWTUtils {
     @Autowired
     private UserRepository userRepository;
 
-    public static final String SECRET ="4A6F784C6E784F366A703477537A7A343D414E7261516336506B6F734E57504E";
+    public static final String SECRET = "4A6F784C6E784F366A703477537A7A343D414E7261516336506B6F734E57504E";
 
     private JWTUtils() {
     }
@@ -39,27 +39,27 @@ public class JWTUtils {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public void updateUserActivity(UserDetails userDetails){
-        Optional<UserEntity>userOptional=userRepository.findByEmail(userDetails.getUsername());
-        if(userOptional.isPresent()){
-            UserEntity user=userOptional.get();
+    public void updateUserActivity(UserDetails userDetails) {
+        Optional<UserEntity> userOptional = userRepository.findByEmail(userDetails.getUsername());
+        if (userOptional.isPresent()) {
+            UserEntity user = userOptional.get();
             user.setLastActivity(java.time.LocalDateTime.now());
             userRepository.save(user);
         }
     }
 
-    public boolean checkTokenExpiration(UserDetails userDetails){
-        Optional<UserEntity>userOptional=userRepository.findByEmail(userDetails.getUsername());
-        if(userOptional.isPresent()){
-            UserEntity user=userOptional.get();
-            LocalDateTime time1=LocalDateTime.now();
-            LocalDateTime time2=user.getLastActivity();
+    public boolean checkTokenExpiration(UserDetails userDetails) {
+        Optional<UserEntity> userOptional = userRepository.findByEmail(userDetails.getUsername());
+        if (userOptional.isPresent()) {
+            UserEntity user = userOptional.get();
+            LocalDateTime time1 = LocalDateTime.now();
+            LocalDateTime time2 = user.getLastActivity();
 
-            int diffMinutes=time1.getMinute()-time2.getMinute();
+            int diffMinutes = time1.getMinute() - time2.getMinute();
 
-            log.info("Minutes Diff :"+diffMinutes);
+            log.info("Minutes Diff :" + diffMinutes);
 
-            if(diffMinutes>1){
+            if (diffMinutes > 1) {
                 return true;
             }
 
@@ -98,9 +98,9 @@ public class JWTUtils {
     }
 
 
-    public String generateToken(String userName){
-        Map<String,Object> claims=new HashMap<>();
-        return createToken(claims,userName);
+    public String generateToken(String userName) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, userName);
     }
 
     private String createToken(Map<String, Object> claims, String userName) {
@@ -108,13 +108,14 @@ public class JWTUtils {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*30))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 30))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
     private Key getSignKey() {
-        byte[] keyBytes=Decoders.BASE64.decode(SECRET);
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-}
 
+
+}

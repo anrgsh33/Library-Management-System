@@ -1,12 +1,14 @@
 package com.example.lms.service.serviceImpl;
 
 import com.example.lms.dto.LoginReqDto;
+import com.example.lms.dto.LoginResDto;
 import com.example.lms.dto.UserDto;
 import com.example.lms.dto.UserResDto;
 import com.example.lms.entity.UserEntity;
 import com.example.lms.exception.CustomServiceException;
 import com.example.lms.repository.UserRepository;
 import com.example.lms.response.ResponseModel;
+import com.example.lms.service.RefreshTokenService;
 import com.example.lms.service.UserService;
 import com.example.lms.util.JWTUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,9 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private RefreshTokenService refreshTokenService;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Override
@@ -58,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseModel<String> loginUser(LoginReqDto user){
+    public ResponseModel<LoginResDto> loginUser(LoginReqDto user){
         try {
 
             log.info("email:{} password:{}",user.getEmail(),user.getPassword());
@@ -66,6 +71,8 @@ public class UserServiceImpl implements UserService {
 
             Optional<UserEntity> userOptional = userRepository.findByEmail(user.getEmail());
             if (userOptional.isPresent()) {
+                //delete the old refresh token of the user
+                refreshTokenService.deleteRefreshToken(userOptional.get().getId());
                 log.info(userOptional.get().getName());
                 String jwt = jwtUtils.generateToken(user.getEmail());
                //Upating user last activity on login also
@@ -73,7 +80,15 @@ public class UserServiceImpl implements UserService {
                 userEntity.setLastActivity(LocalDateTime.now());
                 userRepository.save(userEntity);
 
-                return new ResponseModel("User successfully logged in", HttpStatus.OK,jwt.toString());
+                String refreshToken=refreshTokenService.getRefreshToken(user.getEmail());
+
+                LoginResDto response=LoginResDto
+                        .builder()
+                        .accessToken(jwt)
+                        .refreshToken(refreshToken)
+                        .build();
+
+                return new ResponseModel("User successfully logged in", HttpStatus.OK,response);
 
             } else {
                 throw new RuntimeException("Invalid credentials");
